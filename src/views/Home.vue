@@ -1,7 +1,9 @@
 <template>
   <Background/>
-  <Search :class="{show: true, active: !$store.state.showNavFolder}"/>
-  <Nav class="nav" v-if="$store.state.showNavFolder"/>
+  <div id="center">
+    <Search class="search" :class="{active: !$store.state.isShowNavFolder}"/>
+    <Nav class="nav" v-if="$store.state.isShowNavFolder"/>
+  </div>
 </template>
 
 <script>
@@ -19,12 +21,30 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.show {
-  opacity: 0;
+#center {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
-}
-.active {
-  opacity: 1;
-  pointer-events: auto;
+  .search {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%);
+    opacity: 0;
+    pointer-events: auto;
+    &.active {
+      opacity: 1;
+    }
+  }
+  .nav {
+    pointer-events: auto;
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%);
+  }
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <img id="bg-img" :class="{active: $store.state.isBgActive}" src="@/assets/images/bg2.jpg">
-  <div id="cover" :class="{coverActive: $store.state.isBgActive}" @click.right.prevent="bgRightClick"></div>
+  <div id="cover" :class="{coverActive: $store.state.isBgActive}" @click.left="bgLeftClick" @click.right.prevent="bgRightClick"></div>
 </template>
 
 <script>
@@ -8,9 +8,10 @@ import mouseFuc from './composition/mouseFuc'
 export default {
   setup() {
     // 鼠标事件
-    let { bgRightClick } = mouseFuc()
+    let { bgRightClick, bgLeftClick } = mouseFuc()
     return {
-      bgRightClick
+      bgRightClick,
+      bgLeftClick
     }
   }
 }
@@ -40,7 +41,7 @@ export default {
   width: 100%;
   height: 100%;
   // background-image: radial-gradient(rgba(0,0,0,0) 0,rgba(0,0,0,.5) 100%),radial-gradient(rgba(0,0,0,0) 33%,rgba(0,0,0,.3) 166%);
-  background-color: rgba(0,0,0,.4);
+  background-color: rgba(0,0,0,.5);
   transition: .25s;
   &.coverActive {
     opacity: 1;

@@ -3,11 +3,9 @@
     <!-- <div id="buoy-1"></div> -->
     <input type="text" id="search-input" :class="{active: inputActive}" @focus="focus" @blur="blur" :placeholder="placeholderStr">
     <div class="search-to">
-      <div id="buoy-2"></div>
-      <!-- <div class="search-to-item">站内</div>
-      <div class="search-to-item">百度</div>
-      <div class="search-to-item">CSDN</div>
-      <div class="search-to-item">淘宝</div> -->
+      <div class="search-to-item" v-for="(item, index) in searchList" :key="index">
+        {{item.name}}
+      </div>
     </div>
   </div>
 </template>
@@ -20,12 +18,31 @@ export default {
   data() {
     return {
       placeholderStr: '搜索',
-      inputActive: false
+      inputActive: false,
+      searchList: [
+        {
+          name: '百度', 
+          url: 'https://www.baidu.com/s?wd='
+        },
+        {
+          name: 'CSDN', 
+          url: 'https://so.csdn.net/so/search?q='
+        },
+        {
+          name: '淘宝',
+          url: 'https://uland.taobao.com/sem/tbsearch?keyword='
+        },
+        {
+          name: 'NPM',
+          url: 'https://www.npmjs.com/search?q='
+        }
+      ]
     }
   },
   methods: {
     ...mapMutations(['setIsBgActive']),
-    focus() {
+    focus(e) {
+      console.log(e)
       this.placeholderStr = ''
       this.inputActive = true
       this.setIsBgActive(true)
@@ -49,14 +66,14 @@ export default {
 
 <style lang="scss" scoped>
 .search-box {
-  margin: 100px auto 0 auto;
+  margin: 0 auto;
   width: 60%;
   #search-input {
     display: block;
     box-sizing: border-box;
     margin: 0 auto;
     height: 45px;
-    width: 50%;
+    width: 25%;
     border-radius: 30px;
     color: #fff;
     border: 1px solid rgba(255,255,255,.05);
@@ -70,12 +87,33 @@ export default {
       color: #fff;
     }
     &:hover {
-      width: 80%;
+      width: 70%;
     }
     &.active {
-      width: 80%;
-      background-color: rgba(255,255,255,.7);
+      width: 70%;
+      background-color: rgba(255,255,255,.9);
       color: #000;
+    }
+  }
+  .search-to {
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .search-to-item {
+      padding: 10px 30px;
+      margin-left: 5px;
+      margin-right: 5px;
+      background-color: rgba(255,255,255,.1);
+      border-radius: 20px;
+      transition: .25s;
+      cursor: pointer;
+      color: #dbd9d9;
+      font-size: 16px;
+      font-weight: bold;
+      .active {
+        background-color: $basic-color;
+      }
     }
   }
 }

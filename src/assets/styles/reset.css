@@ -47,7 +47,3 @@ table {
 * {
   transition: all .3s;
 }
-
-:root {
-  --basic-color: blue;
-}

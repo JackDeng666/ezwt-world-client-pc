@@ -4,7 +4,7 @@ import throttle from '@/umlib/throttle'
 export default createStore({
   state: {
     isBgActive: false,
-    showNavFolder: false
+    isShowNavFolder: false
   },
   mutations: {
     setIsBgActive(state, data) {
@@ -12,13 +12,21 @@ export default createStore({
         state.isBgActive = data
       }, 200)
     },
+    showNavFolder(state) {
+      state.isBgActive = true
+      state.isShowNavFolder = true
+    },
+    hideNavFolder(state) {
+      state.isBgActive = false
+      state.isShowNavFolder = false
+    },
     toggleNavFolder(state) {
-      if(state.showNavFolder) {
+      if(state.isShowNavFolder) {
         state.isBgActive = false
-        state.showNavFolder = false
+        state.isShowNavFolder = false
       } else {
         state.isBgActive = true
-        state.showNavFolder = true
+        state.isShowNavFolder = true
       }
     }
   },
