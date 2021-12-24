@@ -1,9 +1,24 @@
 <template>
   <div class="search-box">
-    <!-- <div id="buoy-1"></div> -->
-    <input type="text" id="search-input" :class="{active: inputActive}" @focus="focus" @blur="blur" :placeholder="placeholderStr">
-    <div class="search-to">
-      <div class="search-to-item" v-for="(item, index) in searchList" :key="index">
+    <div v-if="inputActive" id="buoy" ref="buoy"></div>
+    <input 
+      type="text" 
+      id="search-input"
+      ref="search-input"
+      :class="{active: inputActive}" 
+      @focus="focus" 
+      @blur="blur" 
+      :placeholder="inputActive ? '' : placeholderStr"
+      @keyup.enter="search">
+    <div 
+      class="search-to"
+      ref="search-to"
+      :class="{show: inputActive}">
+      <div 
+        v-for="(item, index) in searchList" 
+        :key="index" 
+        :class="searchIndex == index ? 'search-to-item active animate__animated animate__rubberBand' : 'search-to-item'"
+        @click.stop="searchItemClick(index)">
         {{item.name}}
       </div>
     </div>
@@ -18,7 +33,7 @@ export default {
   data() {
     return {
       placeholderStr: '搜索',
-      inputActive: false,
+      iActive: false,
       searchList: [
         {
           name: '百度', 
@@ -36,21 +51,98 @@ export default {
           name: 'NPM',
           url: 'https://www.npmjs.com/search?q='
         }
-      ]
+      ],
+      searchIndex: 0, // 当前搜索引擎索引
+      keydownIndex: 0, // 键盘事件索引
+      searchRelateShow: false // 搜索关联词显示
+    }
+  },
+  computed: {
+    inputActive() {
+      return this.$store.state.isBgActive && this.iActive
+    },
+    keydownLength() { // 上下键可滚动的长度
+      return this.searchRelateShow ? 2 : 1
+    }
+  },
+  watch: {
+    keydownIndex() {
+      this.calcFocus()
+      this.calcBuoyPosition()
+    },
+    inputActive(val) {
+      if(!val) {
+        document.onkeyup = null
+      }
     }
   },
   methods: {
     ...mapMutations(['setIsBgActive']),
-    focus(e) {
-      console.log(e)
-      this.placeholderStr = ''
-      this.inputActive = true
+    focus() {
+      this.iActive = true
+      this.setKeyupEvent()
       this.setIsBgActive(true)
+      setTimeout(() => {
+        this.calcBuoyPosition()
+      }, 300)
     },
-    blur() {
-      this.placeholderStr = '搜索'
-      this.inputActive = false
-      this.setIsBgActive(false)
+    search(e) {
+      window.open(this.searchList[this.searchIndex].url + e.srcElement.value, "_blank");
+    },
+    setKeyupEvent() {
+      document.onkeyup = event => {
+        this.searchKeyup(event)
+      }
+    },
+    searchKeyup(e) {
+      // console.log(e.key, e.keyCode)
+      const that = this
+      // 键盘上下键切换选中光标
+      if(e.keyCode == 40) { // ArrowDown
+        that.keydownIndex++
+        that.keydownIndex = that.keydownIndex > that.keydownLength ? 0 : that.keydownIndex
+      }
+      if(e.keyCode == 38) { // ArrowUp
+        that.keydownIndex--
+        that.keydownIndex = that.keydownIndex < 0 ? that.keydownLength : that.keydownIndex
+      }
+      if(that.keydownIndex == 1) {
+        if(e.keyCode == 37) { // ArrowLeft
+          that.searchIndex--
+          that.searchIndex = that.searchIndex < 0 ? that.searchList.length - 1 : that.searchIndex
+        }
+        if(e.keyCode == 39) { // ArrowRight
+          that.searchIndex++
+          that.searchIndex = that.searchIndex > that.searchList.length - 1 ? 0 : that.searchIndex
+        }
+      }
+    },
+    calcFocus() {
+      const input = this.$refs['search-input']
+      if(this.keydownIndex == 0) {
+        input.focus()
+      } else {
+        input.blur()
+      }
+    },
+    // 计算浮标位置
+    calcBuoyPosition() {
+      let left, top, object
+      const buoy = this.$refs['buoy']
+      if(this.keydownIndex == 0) {
+        object = this.$refs['search-input']
+        left = object.offsetLeft - 20
+        top = object.offsetTop + object.offsetHeight / 2 - 7
+      }
+      if(this.keydownIndex == 1) {
+        object = this.$refs['search-to']
+        left = object.offsetLeft - object.offsetWidth / 2 - 20
+        top = object.offsetTop + object.offsetHeight / 2 - 7
+      }
+      buoy.style.cssText = `left: ${left}px;top: ${top}px;`
+    },
+    searchItemClick(index) {
+      this.searchIndex = index
     }
   },
   setup () {
@@ -66,14 +158,26 @@ export default {
 
 <style lang="scss" scoped>
 .search-box {
+  position: relative;
   margin: 0 auto;
-  width: 60%;
+  width: 100%;
+  #buoy {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 0;
+    height: 0;
+    border-top: 7px solid transparent;
+    border-left: 14px solid $basic-color;
+    border-bottom: 7px solid transparent;
+    transition: .2s;
+  }
   #search-input {
     display: block;
     box-sizing: border-box;
     margin: 0 auto;
     height: 45px;
-    width: 25%;
+    width: 15%;
     border-radius: 30px;
     color: #fff;
     border: 1px solid rgba(255,255,255,.05);
@@ -87,32 +191,50 @@ export default {
       color: #fff;
     }
     &:hover {
-      width: 70%;
+      width: 30%;
     }
     &.active {
-      width: 70%;
+      width: 40%;
       background-color: rgba(255,255,255,.9);
       color: #000;
     }
   }
   .search-to {
+    z-index: -1;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%);
+    opacity: 0;
     height: 80px;
     display: flex;
     justify-content: center;
     align-items: center;
+    &.show {
+      top: 45px;
+      opacity: 1;
+      transition: all .1s .2s;
+    }
     .search-to-item {
-      padding: 10px 30px;
+      padding: 0 25px;
+      height: 35px;
+      line-height: 35px;
       margin-left: 5px;
       margin-right: 5px;
       background-color: rgba(255,255,255,.1);
       border-radius: 20px;
-      transition: .25s;
+      transition: .4s;
       cursor: pointer;
-      color: #dbd9d9;
+      color: #e7e7e7;
       font-size: 16px;
       font-weight: bold;
-      .active {
+      &:hover {
+        background-color: rgba(255,255,255,.3);
+      }
+      &.active {
         background-color: $basic-color;
+        -webkit-animation-duration: .5s;
+        animation-duration: .5s;
       }
     }
   }
