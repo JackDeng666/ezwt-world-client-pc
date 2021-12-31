@@ -11,5 +11,6 @@ export default {
 
 <style lang="scss">
 @import url('./assets/styles/reset.css');
+@import url('./assets/styles/animate.css');
 @import url('./assets/styles/common.scss');
 </style>

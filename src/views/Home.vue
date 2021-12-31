@@ -4,18 +4,21 @@
     <Search class="search" :class="{active: !$store.state.isShowNavFolder}"/>
     <Nav class="nav" v-if="$store.state.isShowNavFolder"/>
   </div>
+  <FloatingTool/>
 </template>
 
 <script>
 import Background from './components/Background/'
 import Search from './components/Search/'
 import Nav from './components/Nav/'
+import FloatingTool from './components/FloatingTool/'
 export default {
   name: 'Home',
   components: {
     Background,
     Search,
-    Nav
+    Nav,
+    FloatingTool
   }
 }
 </script>

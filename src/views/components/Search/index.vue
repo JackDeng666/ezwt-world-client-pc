@@ -7,9 +7,9 @@
       ref="search-input"
       :class="{active: inputActive}" 
       @focus="focus" 
-      @blur="blur" 
-      :placeholder="inputActive ? '' : placeholderStr"
-      @keyup.enter="search">
+      @blur="blur"
+      v-model="searchStr"
+      :placeholder="inputActive ? '' : placeholderStr">
     <div 
       class="search-to"
       ref="search-to"
@@ -17,7 +17,7 @@
       <div 
         v-for="(item, index) in searchList" 
         :key="index" 
-        :class="searchIndex == index ? 'search-to-item active animate__animated animate__rubberBand' : 'search-to-item'"
+        :class="searchIndex == index ? 'search-to-item active animate_bounce' : 'search-to-item'"
         @click.stop="searchItemClick(index)">
         {{item.name}}
       </div>
@@ -86,8 +86,8 @@ export default {
         this.calcBuoyPosition()
       }, 300)
     },
-    search(e) {
-      window.open(this.searchList[this.searchIndex].url + e.srcElement.value, "_blank");
+    search() {
+      window.open(this.searchList[this.searchIndex].url + this.searchStr, "_blank");
     },
     setKeyupEvent() {
       document.onkeyup = event => {
@@ -97,15 +97,22 @@ export default {
     searchKeyup(e) {
       // console.log(e.key, e.keyCode)
       const that = this
+      if(e.keyCode == 13) { // enter
+        that.search(e)
+        return
+      }
       // 键盘上下键切换选中光标
       if(e.keyCode == 40) { // ArrowDown
         that.keydownIndex++
         that.keydownIndex = that.keydownIndex > that.keydownLength ? 0 : that.keydownIndex
+        return
       }
       if(e.keyCode == 38) { // ArrowUp
         that.keydownIndex--
         that.keydownIndex = that.keydownIndex < 0 ? that.keydownLength : that.keydownIndex
+        return
       }
+      // 左右
       if(that.keydownIndex == 1) {
         if(e.keyCode == 37) { // ArrowLeft
           that.searchIndex--
@@ -184,6 +191,7 @@ export default {
     padding: 10px 20px;
     backdrop-filter: blur(2px);
     background-color: rgba(0,0,0,0.6);
+    // background-color: rgba(255,255,255,.6);
     outline: 0;
     font-size: 16px;
     text-align: center;
@@ -192,10 +200,13 @@ export default {
     }
     &:hover {
       width: 30%;
+      &::placeholder {
+        color: #d3d3d3;
+      }
     }
     &.active {
       width: 40%;
-      background-color: rgba(255,255,255,.9);
+      background-color: rgba(255,255,255,.95);
       color: #000;
     }
   }
@@ -225,7 +236,7 @@ export default {
       border-radius: 20px;
       transition: .4s;
       cursor: pointer;
-      color: #e7e7e7;
+      color: #fff;
       font-size: 16px;
       font-weight: bold;
       &:hover {
@@ -233,8 +244,6 @@ export default {
       }
       &.active {
         background-color: $basic-color;
-        -webkit-animation-duration: .5s;
-        animation-duration: .5s;
       }
     }
   }
