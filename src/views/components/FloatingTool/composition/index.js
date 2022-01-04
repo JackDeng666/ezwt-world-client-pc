@@ -3,14 +3,16 @@ import { reactive, onMounted, getCurrentInstance } from 'vue'
 let oBtn = null
 let aMenus = null
 let menus = [
-  { name: '用户', class: 'fa fa-user', component: 'UserInfo' },
-  { name: '添加', class: 'fa fa-plus-circle', component: 'UserInfo' },
-  { name: '壁纸设置', class: 'fa fa-photo', component: 'ImageSettings' },
-  { name: '主题设置', class: 'fa fa-refresh', component: 'UserInfo' },
-  { name: '反馈', class: 'fa fa-comments', component: 'UserInfo' }
+  { name: '用户', class: 'iconfont icon-user', component: 'UserInfo' },
+  { name: '设置', class: 'iconfont icon-shezhi', component: 'UserInfo' },
+  { name: '壁纸设置', class: 'iconfont icon-bizhiputie', component: 'ImageSettings' },
+  { name: '帮助', class: 'iconfont icon-bangzhu', component: 'UserInfo' },
+  { name: '反馈', class: 'iconfont icon-fankui', component: 'UserInfo' }
 ]
 
 export default function () {
+  const { proxy } = getCurrentInstance()
+
   const state = reactive({
     menus,
     menuOff: true
@@ -26,11 +28,12 @@ export default function () {
   })
 
   // 菜单按钮点击
-  const settingClick = (e) => {
-    if (state.menuOff)
-      setCss(e.srcElement, { $Transform: "rotate(-180deg)" })
-    else
-      setCss(e.srcElement, { $Transform: "rotate(0deg)" })
+  const menuClick = () => {
+    if (state.menuOff) {
+      setCss(proxy.$refs['home'], { $Transform: "rotate(-135deg)" })
+    } else {
+      setCss(proxy.$refs['home'], { $Transform: "rotate(0deg)" })
+    }
     for (let i = 0; i < aMenus.length; i++) {
       if (state.menuOff)
         toMove(aMenus[i], i * 100, state.menuOff)
@@ -40,7 +43,7 @@ export default function () {
     state.menuOff = !state.menuOff
   }
 
-  const { proxy } = getCurrentInstance()
+
 
   // 每一项被点击
   const itemClick = i => {
@@ -53,7 +56,7 @@ export default function () {
 
   return {
     state,
-    settingClick,
+    menuClick,
     itemClick
   }
 }

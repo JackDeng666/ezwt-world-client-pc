@@ -1,7 +1,9 @@
 import antiShake from './antiShake'
+import throttle from './throttle'
 
 export default {
-  install() {
-    Vue.prototype.antiShake = antiShake
+  install(app) {
+    app.config.globalProperties.$antiShake = antiShake
+    app.config.globalProperties.$throttle = throttle
   }
 }

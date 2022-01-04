@@ -1,6 +1,8 @@
 <template>
   <div class="search-box">
-    <div v-if="inputActive" id="buoy" ref="buoy"></div>
+    <div class="buoy" :class="{show: inputActive}" ref="buoy">
+      <i class="iconfont icon-arrow-r_fill"></i>
+    </div>
     <input 
       type="text" 
       id="search-input"
@@ -73,6 +75,7 @@ export default {
     inputActive(val) {
       if(!val) {
         document.onkeyup = null
+        this.hideBuoy()
       }
     }
   },
@@ -83,6 +86,7 @@ export default {
       this.setKeyupEvent()
       this.setIsBgActive(true)
       setTimeout(() => {
+        this.showBuoy()
         this.calcBuoyPosition()
       }, 300)
     },
@@ -132,6 +136,17 @@ export default {
         input.blur()
       }
     },
+    showBuoy() {
+      const buoy = this.$refs['buoy']
+      buoy.style.webkitTransform = 'rotate(0deg)'
+      // buoy.style.cssText = `transform: rotate(0deg);`
+    },
+    hideBuoy() {
+      const buoy = this.$refs['buoy']
+      buoy.style.webkitTransform = 'rotate(-180deg)'
+      console.log(buoy.style.webkitTransform)
+      // buoy.style.cssText = `transform: rotate(-180deg);`
+    },
     // 计算浮标位置
     calcBuoyPosition() {
       let left, top, object
@@ -168,16 +183,12 @@ export default {
   position: relative;
   margin: 0 auto;
   width: 100%;
-  #buoy {
+  .buoy {
     position: absolute;
-    left: 50%;
+    left: -50px;
     top: 0;
-    width: 0;
-    height: 0;
-    border-top: 7px solid transparent;
-    border-left: 14px solid $basic-color;
-    border-bottom: 7px solid transparent;
-    transition: .2s;
+    color: $basic-color;
+    transition: .5s;
   }
   #search-input {
     display: block;

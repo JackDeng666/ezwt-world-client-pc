@@ -5,8 +5,8 @@
         <i :class="item.class"></i>
       </div>
     </div>
-    <div id="home" @click="settingClick">
-      <i class="fa fa-cog"></i>
+    <div id="home" ref="home" @click="menuClick">
+      <i class="iconfont icon-menu-s"></i>
     </div>
   </div>
 </template>
@@ -16,10 +16,10 @@ import { toRefs } from 'vue'
 import init from './composition/index'
 export default {
   setup () {
-    const { state, settingClick, itemClick } = init()
+    const { state, menuClick, itemClick } = init()
     return {
       ...toRefs(state),
-      settingClick,
+      menuClick,
       itemClick
     }
   }
@@ -49,8 +49,6 @@ export default {
       font-size: 20px;
       box-shadow: 0 0 5px 1px rgba(10, 10, 10, .5);
       cursor: pointer;
-      // background: $basic-color;
-      // color: #fff;
       background: #fff;
       color: $basic-color;
       i {
@@ -60,24 +58,22 @@ export default {
     }
   }
   #home {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
     position: absolute;
     left: 0;
     top: 0;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
     text-align: center;
     line-height: 50px;
-    font-size: 22px;
+    font-size: 20px;
     box-shadow: 0 0 5px 1px rgba(10, 10, 10, .5);
     cursor: pointer;
     background: $basic-color;
     color: #fff;
-    // background: #fff;
-    // color: $basic-color;
     i {
-      height: 50px;
-      line-height: 50px;
+      height: 42px;
+      line-height: 42px;
     }
   }
 }
