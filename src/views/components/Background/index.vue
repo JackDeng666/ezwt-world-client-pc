@@ -1,5 +1,5 @@
 <template>
-  <img id="bg-img" :class="{active: $store.state.isBgActive}" src="@/assets/images/bg2.jpg">
+  <img id="bg-img" :class="{active: $store.state.isBgActive}" src="/images/bg2.jpg">
   <div id="cover" :class="{coverActive: $store.state.isBgActive}" @click.left="bgLeftClick" @click.right.prevent="bgRightClick"></div>
 </template>
 

@@ -1,4 +1,4 @@
-import PopContentConstructor from './index.vue'
+import PopContentConstructor from './PopContent.vue'
 import { createApp } from 'vue'
 import store from '@/store'
 
@@ -31,7 +31,7 @@ const hide = () => {
 }
 
 export default {
-  install: app => {
+  install(app) {
     app.config.globalProperties.$popContent = {
       show,
       hide

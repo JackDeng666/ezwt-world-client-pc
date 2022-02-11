@@ -1,6 +1,6 @@
 <template>
   <div class="search-box">
-    <div class="buoy" :class="{show: inputActive}" ref="buoy">
+    <div class="buoy" ref="buoy">
       <i class="iconfont icon-arrow-r_fill"></i>
     </div>
     <input 
@@ -8,7 +8,7 @@
       id="search-input"
       ref="search-input"
       :class="{active: inputActive}" 
-      @focus="focus" 
+      @click="focus" 
       @blur="blur"
       v-model="searchStr"
       :placeholder="inputActive ? '' : placeholderStr">
@@ -86,8 +86,8 @@ export default {
       this.setKeyupEvent()
       this.setIsBgActive(true)
       setTimeout(() => {
-        this.showBuoy()
         this.calcBuoyPosition()
+        this.showBuoy()
       }, 300)
     },
     search() {
@@ -138,14 +138,19 @@ export default {
     },
     showBuoy() {
       const buoy = this.$refs['buoy']
-      buoy.style.webkitTransform = 'rotate(0deg)'
-      // buoy.style.cssText = `transform: rotate(0deg);`
+      buoy.style.display = 'block'
+      buoy.classList.add('animate_display')
+      setTimeout(() => {
+        buoy.classList.remove('animate_display')
+      }, 500)
     },
     hideBuoy() {
       const buoy = this.$refs['buoy']
-      buoy.style.webkitTransform = 'rotate(-180deg)'
-      console.log(buoy.style.webkitTransform)
-      // buoy.style.cssText = `transform: rotate(-180deg);`
+      buoy.classList.add('animate_close')
+      setTimeout(() => {
+        buoy.classList.remove('animate_close')
+        buoy.style.display = 'none'
+      }, 500)
     },
     // 计算浮标位置
     calcBuoyPosition() {
@@ -188,7 +193,7 @@ export default {
     left: -50px;
     top: 0;
     color: $basic-color;
-    transition: .5s;
+    transition: .2s;
   }
   #search-input {
     display: block;

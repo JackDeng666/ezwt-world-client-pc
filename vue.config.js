@@ -1,4 +1,5 @@
 module.exports = {
+  publicPath: '/ying-nav/',
   css: {
     loaderOptions: {
       sass: {

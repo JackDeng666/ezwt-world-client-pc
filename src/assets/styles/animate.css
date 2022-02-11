@@ -3,6 +3,16 @@
   animation-fill-mode: both;
   animation-name: bounce;
 }
+.animate_display {
+  animation-duration: .4s;
+  animation-fill-mode: both;
+  animation-name: display-animate;
+}
+.animate_close {
+  animation-duration: .4s;
+  animation-fill-mode: both;
+  animation-name: close-animate;
+}
 
 @keyframes bounce {
   0% {
@@ -46,5 +56,46 @@
   }
   100% {
     transform: rotate3d(1, 1, 0, 45deg)
+  }
+}
+
+@keyframes display-animate {
+  0% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(2);
+  }
+  45% {
+    transform: scale3d(1.15, .85, 1);
+  }
+  75% {
+    transform: scale3d(.85, 1.15, 1);
+  }
+  90% {
+    transform: scale3d(1.05, .95, 1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes close-animate {
+  0% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(2) rotate(0deg);
+  }
+  45% {
+    transform: scale3d(1.15, .85, 1);
+  }
+  75% {
+    transform: scale3d(.85, 1.15, 1);
+  }
+  90% {
+    transform: scale3d(1.05, .95, 1);
+  }
+  100% {
+    transform: scale(0);
   }
 }
