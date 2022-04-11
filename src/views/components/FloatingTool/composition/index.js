@@ -7,7 +7,7 @@ let menus = [
   { name: '设置', class: 'iconfont icon-shezhi', component: 'UserInfo' },
   { name: '壁纸设置', class: 'iconfont icon-bizhiputie', component: 'ImageSettings' },
   { name: '帮助', class: 'iconfont icon-bangzhu', component: 'UserInfo' },
-  { name: '反馈', class: 'iconfont icon-fankui', component: 'UserInfo' }
+  { name: '反馈', class: 'iconfont icon-fankui', component: 'FeedBack' }
 ]
 
 export default function () {

@@ -1,6 +1,6 @@
 <template>
-  <img id="bg-img" :class="{active: $store.state.isBgActive}" src="/images/bg2.jpg">
-  <div id="cover" :class="{coverActive: $store.state.isBgActive}" @click.left="bgLeftClick" @click.right.prevent="bgRightClick"></div>
+  <img id="bg-img" :class="{active: $store.state.isCoverShow}" src="/images/bg1.jpg">
+  <div id="cover" :class="{coverActive: $store.state.isCoverShow}" @click.left="bgLeftClick" @click.right.prevent="bgRightClick"></div>
 </template>
 
 <script>

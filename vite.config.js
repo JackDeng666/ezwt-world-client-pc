@@ -3,7 +3,6 @@ import vue from '@vitejs/plugin-vue'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  open: true,
   base: '/ying-nav/',
   plugins: [
     vue()
@@ -22,6 +21,9 @@ export default defineConfig({
     }
   },
   server: {
-    proxy: {} // 原本项目的后端接口代理
+    open: true,
+    port: 3060,
+    proxy: {
+    }
   }
 })

@@ -3,7 +3,7 @@
     <div class="pop-box" :class="{'pre-close': preClose, show: show, close: !show}">
       <div class="title">{{ title }}</div>
       <span class="close" @mouseover="closeOver" @mouseout="closeOut" @click="colse"></span>
-      <div class="pop-content">
+      <div class="pop-content" ref="popContent">
         <div class="scroll-view">
           <component :is="currentCom"/>
         </div>
@@ -13,12 +13,14 @@
 </template>
 
 <script>
-import UserInfo from '@/views/ToolView/UserInfo/'
-import ImageSettings from '@/views/ToolView/ImageSettings/'
+import UserInfo from '@/views/ToolView/UserInfo/index.vue'
+import ImageSettings from '@/views/ToolView/ImageSettings/index.vue'
+import FeedBack from '@/views/ToolView/FeedBack/index.vue'
 export default {
   components: {
     UserInfo,
-    ImageSettings
+    ImageSettings,
+    FeedBack
   },
   props: {
     title: {
@@ -147,7 +149,7 @@ export default {
       .scroll-view {
         height: 100%;
         overflow-x: hidden;
-        overflow-y: scroll;
+        overflow-y: auto;
         /* 设置滚动条的样式 */
         &::-webkit-scrollbar {
           width: 5px;

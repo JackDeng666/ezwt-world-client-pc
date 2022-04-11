@@ -1,8 +1,11 @@
 <template>
   <Background/>
-  <div id="center">
-    <Search class="search" :class="{active: !$store.state.isShowNavFolder}"/>
-    <Nav class="nav" v-if="$store.state.isShowNavFolder"/>
+  <div class="center" @click.right.prevent="">
+    <virtualNav class="virtual-nav" v-if="$store.state.isNavFolderShow"/>
+  </div>
+  <div class="center" @click.right.prevent="">
+    <Search class="search" :class="{active: !$store.state.isNavFolderShow}"/>
+    <Nav class="nav" v-if="$store.state.isNavFolderShow"/>
   </div>
   <FloatingTool/>
 </template>
@@ -11,6 +14,7 @@
 import Background from './components/Background/'
 import Search from './components/Search/'
 import Nav from './components/Nav/'
+import virtualNav from './components/Nav/virtual'
 import FloatingTool from './components/FloatingTool/'
 export default {
   name: 'Home',
@@ -18,13 +22,14 @@ export default {
     Background,
     Search,
     Nav,
+    virtualNav,
     FloatingTool
   }
 }
 </script>
 
 <style lang="scss" scoped>
-#center {
+.center {
   position: fixed;
   left: 0;
   top: 0;
@@ -32,10 +37,7 @@ export default {
   height: 100%;
   pointer-events: none;
   .search {
-    position: absolute;
-    top: 20%;
-    left: 50%;
-    transform: translate(-50%);
+    margin-top: 200px;
     opacity: 0;
     pointer-events: auto;
     &.active {
@@ -44,10 +46,11 @@ export default {
   }
   .nav {
     pointer-events: auto;
-    position: absolute;
-    top: 20%;
-    left: 50%;
-    transform: translate(-50%);
+  }
+  .virtual-nav {
+    margin-top: 245px;
+    pointer-events: auto;
+    visibility: hidden;
   }
 }
 </style>
