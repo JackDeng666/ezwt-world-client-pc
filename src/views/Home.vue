@@ -39,9 +39,10 @@ export default {
   .search {
     margin-top: 200px;
     opacity: 0;
-    pointer-events: auto;
+    pointer-events: none;
     &.active {
       opacity: 1;
+      pointer-events: auto;
     }
   }
   .nav {

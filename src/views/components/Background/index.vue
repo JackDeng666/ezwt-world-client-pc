@@ -30,6 +30,7 @@ export default {
   backface-visibility: hidden;
   &.active {
     transform: scale(1.1);
+    user-select: none;
   }
 }
 #cover {
@@ -45,6 +46,7 @@ export default {
   transition: .25s;
   &.coverActive {
     opacity: 1;
+    user-select: none;
   }
 }
 </style>

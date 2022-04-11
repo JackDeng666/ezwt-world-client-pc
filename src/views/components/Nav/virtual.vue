@@ -6,7 +6,8 @@
       class="nav-item"
       v-for="(item, index) in $store.state.navList" 
       :data-id="item.id">
-      <div class="wrap">{{item.id}}</div>
+      <div class="wrap"></div>
+      <div>{{item.text}}</div>
     </div>
   </div>
 </div>
@@ -17,25 +18,31 @@
   width: 100%;
   .nav-content {
     margin: 0 auto;
-    width: 720px;
+    width: 650px;
     display: flex;
     flex-wrap: wrap;
     .nav-item {
-      padding: 22px;
+      padding: 10px 25px;
       display: flex;
       flex-direction: column;
       justify-content: center;
+      align-items: center;
       user-select: none;
+      transition: none;
+      color: #fff;
+      font-size: 14px;
       .wrap {
-        width: 100px;
-        height: 100px;
-        border-radius: 10px;
+        width: 80px;
+        height: 80px;
         text-align: center;
+        border-radius: 5px;
         background-color: rgba(255, 255, 255, .7);
         display: flex;
         flex-direction: column;
         justify-content: center;
+        align-items: center;
         cursor: pointer;
+        margin-bottom: 8px;
       }
     }
   }

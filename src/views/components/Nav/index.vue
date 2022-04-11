@@ -9,6 +9,8 @@ const navList = ref(JSON.parse(JSON.stringify(store.state.navList)))
 let changeArr = JSON.parse(JSON.stringify(navList.value))
 const currentNavOb = ref(null)
 const dragId = ref(-1)
+const moveItemBgShow = ref(false)
+let isDrag = false
 let dragStartTime = 0
 let areaData = []
 let curentAreaData = null, firtDragArea = null
@@ -47,11 +49,13 @@ const handleMousedown = (e, item) => {
   // 显示可拖动的虚拟dom
   curentAreaData = findCurrent(item.id)
   firtDragArea = curentAreaData
+  moveItemBgShow.value = false
+  isDrag = true
   moveObStyle = proxy.$refs['virtual-nav-item'].style
   moveObStyle.cssText = `
     display: flex;
-    left: ${curentAreaData.left}px;
-    top: ${curentAreaData.top}px;
+    left: ${curentAreaData.left }px;
+    top: ${curentAreaData.top }px;
     z-index: 999;
     transition: none;
   `
@@ -82,19 +86,17 @@ function calcPosition(obx, oby) { // 计算交换位置
       obcy = oby + curentAreaData.height / 2
   for(let i = 0; i < areaData.length; i++) {
     let el = areaData[i]
-    if(dragId.value !== i) {
-      let cobcx = el.left + el.width / 2,
-          cobcy = el.top + el.height / 2
-      if( obcx > cobcx - 25 && obcx < cobcx + 25 && obcy > cobcy - 25 && obcy < cobcy + 25 ) {
-        flag = 1
-        changeObIndex = i
-        break
-      }
-      if(obcx > el.left - 25 && obcx < el.left + 25 && obcy > cobcy - 25 && obcy < cobcy + 25) {
-        flag = 2
-        changeObIndex = i
-        break
-      }
+    let cobcx = el.left + el.width / 2,
+        cobcy = el.top + el.height / 2
+    if( obcx > cobcx - 25 && obcx < cobcx + 25 && obcy > cobcy - 25 && obcy < cobcy + 25 ) {
+      flag = 1
+      changeObIndex = i
+      break
+    }
+    if(obcx > el.left - 25 && obcx < el.left + 25 && obcy > cobcy - 25 && obcy < cobcy + 25) {
+      flag = 2
+      changeObIndex = i
+      break
     }
     flag = 0
   }
@@ -102,16 +104,18 @@ function calcPosition(obx, oby) { // 计算交换位置
     // 交换数据，虚拟dom更新
     let index = null
     changeArr.forEach((el, i) => el.id == dragId.value && (index = i))
-    flag == 1 && swapArrItem(changeArr, index, changeObIndex) // 位于中心
-    flag == 2 && moveArrItem(changeArr, index, changeObIndex) // 位于左侧
-    store.commit('setNavList', JSON.parse(JSON.stringify(changeArr)))
-    // 等待虚拟dom渲染后再计算
-    proxy.$nextTick(() => {
-      changeToFixed() // 先改为fixed，否则第一次替换没有效果
-      calcAreaData() // 计算当前交换后的位置
-      changeToFixed() // 当前改为fixed，实现交替动画
-      curentAreaData = findCurrent(dragId.value) // 更新当前拖拽位置
-    })
+    if(index !== changeObIndex) {
+      flag == 1 && swapArrItem(changeArr, index, changeObIndex) // 位于中心
+      flag == 2 && moveArrItem(changeArr, index, changeObIndex) // 位于左侧
+      store.commit('setNavList', JSON.parse(JSON.stringify(changeArr)))
+      // 等待虚拟dom渲染后再计算
+      proxy.$nextTick(() => {
+        changeToFixed() // 先改为fixed，否则第一次替换没有效果
+        calcAreaData() // 计算当前交换后的位置
+        changeToFixed() // 当前改为fixed，实现交替动画
+        curentAreaData = findCurrent(dragId.value) // 更新当前拖拽位置
+      })
+    }
   }
 }
 // arr目标数组  cKey移动元素下标，oKey目标元素下标
@@ -149,8 +153,8 @@ function changeToFixed() { // 改为固定布局，展示动画
     el.style.cssText = el.style.cssText + `
       transition: all .3s;
       position: fixed;
-      left: ${a.left}px;
-      top: ${a.top}px;
+      left: ${a.left }px;
+      top: ${a.top }px;
     `
   })
 }
@@ -158,24 +162,25 @@ function findCurrent(value) {
   return areaData.find(ef => ef.id == value)
 }
 function cancelFixed() { // 取消固定位置，可滑动
+  navList.value = changeArr
   navItems.forEach(el => {
-    el.style.cssText = `
-      position: none;
-      transition: none;
-    `
-    console.log(el)
+    el.style.position = 'static' 
+    el.style.transition = 'none'
   })
 }
 function reset() { // 移动元素回到原来位置或者当前位置
   moveObStyle.transition = 'all .3s'
   moveObStyle.zIndex = 1
-  moveObStyle.left = `${curentAreaData.left}px`
-  moveObStyle.top = `${curentAreaData.top}px`
+  moveObStyle.left = `${curentAreaData.left }px`
+  moveObStyle.top = `${curentAreaData.top }px`
+  moveItemBgShow.value = true
   dragId.value = -1
   setTimeout(() => {
     currentMoveItem.style.transition = 'none'
     currentMoveItem.style.opacity = '1'
     moveObStyle.display = 'none'
+    isDrag = false
+    cancelFixed()
   }, 300)
 }
 </script>
@@ -192,16 +197,22 @@ function reset() { // 移动元素回到原来位置或者当前位置
         class="wrap"
         @click.left.stop="itemClick" 
         @click.right.prevent.stop="itemRightClick"
-        @mousedown.left="handleMousedown($event, item)">{{item.id}}</div>
+        @mousedown.left="handleMousedown($event, item)">
+        <img class="icon" :src="item.iconUrl"/>
+      </div>
+      <div>{{item.text}}</div>
     </div>
   </div>
   <!-- 当前拖动的虚拟滑块 -->
   <div class="virtual-nav-item" ref="virtual-nav-item">
     <div
-      class="wrap"
+      :class="['wrap', moveItemBgShow ? 'show-bg' : '']"
       @mousemove.left="handleMousemove"
       @mouseout.left="handleMouseout"
-      @mouseup.left="handleMouseup">{{currentNavOb?.id}}</div>
+      @mouseup.left="handleMouseup">
+      <img class="icon" :src="currentNavOb?.iconUrl"/>
+    </div>
+    <div>{{currentNavOb?.text}}</div>
   </div>
 </div>
 </template>
@@ -212,45 +223,73 @@ function reset() { // 移动元素回到原来位置或者当前位置
   user-select: none;
   .nav-content {
     margin: 0 auto;
-    width: 720px;
+    width: 650px;
     display: flex;
     flex-wrap: wrap;
     .nav-item {
-      padding: 22px;
+      padding: 10px 25px;
       display: flex;
       flex-direction: column;
       justify-content: center;
+      align-items: center;
       transition: none;
+      color: #fff;
+      font-size: 14px;
       .wrap {
-        width: 100px;
-        height: 100px;
-        border-radius: 10px;
+        width: 80px;
+        height: 80px;
         text-align: center;
+        border-radius: 5px;
         background-color: rgba(255, 255, 255, .7);
         display: flex;
         flex-direction: column;
         justify-content: center;
+        align-items: center;
         cursor: pointer;
+        margin-bottom: 8px;
+        &:hover {
+          background-color: rgba(255, 255, 255, .1);
+        }
+        .icon {
+          width: 50px;
+          height: 50px;
+          border-radius: 10px;
+          pointer-events: none;
+        }
       }
     }
   }
   .virtual-nav-item {
-    padding: 22px;
+    padding: 10px 25px;
     position: fixed;
     display: none;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
     user-select: none;
+    color: #fff;
+    font-size: 14px;
     .wrap {
-      width: 100px;
-      height: 100px;
-      border-radius: 10px;
+      width: 80px;
+      height: 80px;
       text-align: center;
-      background-color: rgba(255, 255, 255, 1);
+      border-radius: 5px;
+      background-color: rgba(255, 255, 255, .1);
       display: flex;
       flex-direction: column;
       justify-content: center;
+      align-items: center;
       cursor: pointer;
+      margin-bottom: 8px;
+      &.show-bg {
+        background-color: rgba(255, 255, 255, .7);
+      }
+      .icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 10px;
+        pointer-events: none;
+      }
     }
   }
 }

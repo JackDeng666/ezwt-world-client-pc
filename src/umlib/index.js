@@ -1,9 +1,3 @@
-import antiShake from './antiShake'
-import throttle from './throttle'
-
-export default {
-  install(app) {
-    app.config.globalProperties.$antiShake = antiShake
-    app.config.globalProperties.$throttle = throttle
-  }
+export function getRandom(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
