@@ -3,16 +3,17 @@
   <div id="cover" :class="{coverActive: $store.state.isCoverShow}" @click.left="bgLeftClick" @click.right.prevent="bgRightClick"></div>
 </template>
 
-<script>
-import mouseFuc from './composition/mouseFuc'
-export default {
-  setup() {
-    // 鼠标事件
-    let { bgRightClick, bgLeftClick } = mouseFuc()
-    return {
-      bgRightClick,
-      bgLeftClick
-    }
+<script setup>
+import { useStore } from "vuex"
+const store = useStore()
+// 鼠标右击事件
+const bgRightClick = () => {
+  store.commit('toggleNavFolder')
+  store.commit('toggleCoverShow')
+}
+const bgLeftClick = () => {
+  if(!store.state.isNavFolderShow) {
+    store.commit('hideCover')
   }
 }
 </script>

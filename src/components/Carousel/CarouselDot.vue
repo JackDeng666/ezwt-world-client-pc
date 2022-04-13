@@ -22,11 +22,10 @@ const dotClick = index => {
 <template>
   <div class="dot-wrapper">
     <div class="dot-item" v-for="item in itemLen" :key="item">
-      <a 
-        href="javascript:;"
+      <span
         class="dot-link"
         :style="{ backgroundColor: currentIndex === item - 1 ? dotBgColor : 'rgba(255, 255, 255, .4)' }"
-        @click="dotClick(item - 1)"></a>
+        @click="dotClick(item - 1)"></span>
     </div>
   </div>
 </template>
@@ -59,6 +58,7 @@ const dotClick = index => {
       height: 12px;
       margin: 4px 8px;
       border-radius: 50%;
+      cursor: pointer;
       &:hover {
         background-color: rgba(255, 255, 255, .7) !important;
       }

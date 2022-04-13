@@ -10,22 +10,12 @@
   <FloatingTool/>
 </template>
 
-<script>
+<script setup>
 import Background from './components/Background/'
 import Search from './components/Search/'
 import Nav from './components/Nav/'
 import virtualNav from './components/Nav/virtual'
 import FloatingTool from './components/FloatingTool/'
-export default {
-  name: 'Home',
-  components: {
-    Background,
-    Search,
-    Nav,
-    virtualNav,
-    FloatingTool
-  }
-}
 </script>
 
 <style lang="scss" scoped>

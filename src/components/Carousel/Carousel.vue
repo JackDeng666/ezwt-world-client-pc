@@ -1,6 +1,7 @@
 <script setup>
 import CarouselDot from './CarouselDot'
 import { ref, getCurrentInstance } from 'vue'
+const emit = defineEmits(["dotClick"])
 const { slots } = getCurrentInstance()
 const props = defineProps({
   initial: {
@@ -27,6 +28,7 @@ const setIndex = (index) => {
 }
 const dotClick = (index) => {
   setIndex(index)
+  emit("dotClick", index)
 }
 </script>
 

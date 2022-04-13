@@ -1,5 +1,5 @@
 <script setup>
-import { ref, getCurrentInstance, watch, onMounted } from 'vue'
+import { ref, getCurrentInstance, watch } from 'vue'
 const { vnode, parent } = getCurrentInstance()
 const selfIndex = vnode.key
 const currentIndex = ref(parent.proxy.currentIndex)

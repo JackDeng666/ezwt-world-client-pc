@@ -4,7 +4,7 @@
   <div class="nav-content virtual">
     <div
       class="nav-item"
-      v-for="(item, index) in $store.state.navList" 
+      v-for="(item, index) in $store.state.navList[$store.state.navListIndex]" 
       :data-id="item.id">
       <div class="wrap"></div>
       <span class="text">{{item.text}}</span>

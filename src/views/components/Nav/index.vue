@@ -2,40 +2,36 @@
 import { ref, onMounted, getCurrentInstance } from 'vue'
 import { useStore } from 'vuex'
 import antiShake from '@/umlib/antiShake'
-import guid from '@/umlib/guid'
+
 const { proxy } = getCurrentInstance()
 const store = useStore()
 const navList = ref(JSON.parse(JSON.stringify(store.state.navList)))
-let changeArr = JSON.parse(JSON.stringify(navList.value))
+const navListIndex = ref(0)
+let changeArr = JSON.parse(JSON.stringify(navList.value[navListIndex.value]))
 const currentNavOb = ref(null)
 const dragId = ref(-1)
 const moveItemBgShow = ref(false)
 let isDrag = false
 let dragStartTime = 0
 let areaData = []
+areaData.length = navList.value.length
 let curentAreaData = null, firtDragArea = null
 let currentMoveItem = null
-let navItems = []
+let navItems = [] // 当前显示的导航块
 let startX = 0, startY = 0, moveObStyle = null
 
 onMounted(() => {
-  navItems = document.querySelectorAll('.nav-content.real .nav-item')
+  navItems = document.querySelectorAll(`.nav-content.nc-${navListIndex.value}.real .nav-item`)
   calcAreaData()
 })
 
-// method
+// 视图方法
 const hide = () => {
   store.commit('hideNavFolder')
   store.commit('hideCover')
 }
-const itemClick = (e) => {
-  console.log("dd")
-  if(Date.now() - dragStartTime < 300) {
-    console.log("跳转")
-  }
-}
-const itemRightClick = (e) => {
-  console.log("right-item")
+const itemRightClick = (e, item) => {
+  console.log(item)
 }
 const handleMousedown = (e, item) => {
   dragId.value = item.id
@@ -72,11 +68,24 @@ const handleMousemove = (e) => {
     calcPosition(obx, oby)
   }, 300)
 }
-const handleMouseout = (e) => {
+// const handleMouseout = (e) => {
+//   console.log('out')
+//   dragId.value !== -1 && reset()
+// }
+const handleMouseup = (e) => {
+  if(Date.now() - dragStartTime < 100) {
+    window.open(currentNavOb.value.url)
+  }
   dragId.value !== -1 && reset()
 }
-const handleMouseup = (e) => {
-  dragId.value !== -1 && reset()
+const dotClick = (index) => {
+  navListIndex.value = index
+  changeArr = JSON.parse(JSON.stringify(navList.value[index]))
+  store.commit('setNavListIndex', index)
+  proxy.$nextTick(() => {
+    navItems = document.querySelectorAll(`.nav-content.nc-${navListIndex.value}.real .nav-item`)
+    calcAreaData()
+  })
 }
 // 内部方法
 function calcPosition(obx, oby) { // 计算交换位置
@@ -84,9 +93,10 @@ function calcPosition(obx, oby) { // 计算交换位置
   let flag, changeObIndex // 标识：1交换位置，2右推位置，目标：交换或右推的目标
   // 拖拽中点
   let obcx = obx + curentAreaData.width / 2,
-      obcy = oby + curentAreaData.height / 2
-  for(let i = 0; i < areaData.length; i++) {
-    let el = areaData[i]
+      obcy = oby + curentAreaData.height / 2,
+      len = areaData[navListIndex.value].length
+  for(let i = 0; i < len; i++) {
+    let el = areaData[navListIndex.value][i]
     let cobcx = el.left + el.width / 2,
         cobcy = el.top + el.height / 2
     if( obcx > cobcx - 25 && obcx < cobcx + 25 && obcy > cobcy - 25 && obcy < cobcy + 25 ) {
@@ -108,6 +118,7 @@ function calcPosition(obx, oby) { // 计算交换位置
     if(index !== changeObIndex) {
       flag == 1 && swapArrItem(changeArr, index, changeObIndex) // 位于中心
       flag == 2 && moveArrItem(changeArr, index, changeObIndex) // 位于左侧
+      store.commit('setNavListIndex', navListIndex)
       store.commit('setNavList', JSON.parse(JSON.stringify(changeArr)))
       // 等待虚拟dom渲染后再计算
       proxy.$nextTick(() => {
@@ -136,10 +147,10 @@ function swapArrItem(arr, cKey, oKey) {
   arr[oKey] = temp
 }
 function calcAreaData() { // 计算每块导航块所在位置
-  areaData = []
+  areaData[navListIndex.value] = []
   let virtualNavItems = document.querySelectorAll('.nav-content.virtual .nav-item')
   virtualNavItems.forEach(el => {
-    areaData.push({
+    areaData[navListIndex.value].push({
       id: el.attributes['data-id'].value,
       left: el.offsetLeft,
       top: el.offsetTop,
@@ -160,10 +171,10 @@ function changeToFixed() { // 改为固定布局，展示动画
   })
 }
 function findCurrent(value) {
-  return areaData.find(ef => ef.id == value)
+  return areaData[navListIndex.value].find(ef => ef.id == value)
 }
 function cancelFixed() { // 取消固定位置，可滑动
-  navList.value = changeArr
+  navList.value[navListIndex.value] = JSON.parse(JSON.stringify(changeArr))
   navItems.forEach(el => {
     el.style.position = 'static' 
     el.style.transition = 'none'
@@ -187,92 +198,96 @@ function reset() { // 移动元素回到原来位置或者当前位置
 </script>
 
 <template>
-<div id="nav-box" @click.left.prevent="" @click.right="hide">
-  <div class="nav-content real">
-    <div
-      class="nav-item"
-      v-for="(item, index) in navList" 
-      :key="item.id"
-      :data-id="item.id">
-      <div
-        class="wrap"
-        @click.left.stop="itemClick" 
-        @click.right.prevent.stop="itemRightClick"
-        @mousedown.left="handleMousedown($event, item)">
-        <img class="icon" :src="item.iconUrl"/>
-      </div>
-      <span class="text">{{item.text}}</span>
-    </div>
+<div  
+  id="nav-box"
+  @click.right="hide"       
+  @mousemove.left="handleMousemove"
+  @mouseup.left="handleMouseup">
+  <div class="silde-container">
+    <Carousel
+      :initial="0"
+      :hasDot="true"
+      @dotClick="dotClick">
+      <CarouselItem v-for="(citem, i) in navList" :key="i">
+        <div :class="`nav-content nc-${i} real`">
+          <div
+            class="nav-item"
+            v-for="(item, index) in navList[i]"
+            :key="item.id"
+            :data-id="item.id">
+            <div
+              class="wrap"
+              @click.right.stop.prevent="itemRightClick($event, item)"
+              @mousedown.left="handleMousedown($event, item)">
+              <img class="icon" :src="item.iconUrl"/>
+            </div>
+            <span class="text">{{item.text}}</span>
+          </div>
+        </div>
+      </CarouselItem>
+    </Carousel>
   </div>
   <!-- 当前拖动的虚拟滑块 -->
   <div class="virtual-nav-item" ref="virtual-nav-item">
-    <div
-      :class="['wrap', moveItemBgShow ? 'show-bg' : '']"
-      @mousemove.left="handleMousemove"
-      @mouseout.left="handleMouseout"
-      @mouseup.left="handleMouseup">
+    <div :class="['wrap', moveItemBgShow ? 'show-bg' : '']">
       <img class="icon" :src="currentNavOb?.iconUrl"/>
     </div>
     <span class="text">{{currentNavOb?.text}}</span>
   </div>
 </div>
-  <!-- <div class="container">
-    <Carousel
-      :initial="0"
-      :hasDot="true">
-      <CarouselItem v-for="(item, i) in 10" :key="i">
-        <div :class="['bg', `b${item}`]">{{item}}</div>
-      </CarouselItem>
-    </Carousel>
-  </div> -->
 </template>
 
 <style lang="scss" scoped>
 #nav-box {
   width: 100%;
   user-select: none;
-  .nav-content {
-    margin: 0 auto;
+  .silde-container {
     width: 660px;
-    display: flex;
-    flex-wrap: wrap;
-    .nav-item {
-      width: 132px;
-      height: 122px;
+    height: 366px;
+    margin: 0 auto;
+    .nav-content {
+      // margin: 0 auto;
+      // width: 660px;
       display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      transition: none;
-      color: #fff;
-      font-size: 14px;
-      .wrap {
-        width: 80px;
-        height: 80px;
-        border-radius: 5px;
-        background-color: rgba(255, 255, 255, .7);
-        cursor: pointer;
-        margin-bottom: 8px;
-        position: relative;
-        &:hover {
-          background-color: rgba(255, 255, 255, .1);
+      flex-wrap: wrap;
+      .nav-item {
+        width: 132px;
+        height: 122px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        transition: none;
+        color: #fff;
+        font-size: 14px;
+        .wrap {
+          width: 80px;
+          height: 80px;
+          border-radius: 5px;
+          background-color: rgba(255, 255, 255, .7);
+          cursor: pointer;
+          margin-bottom: 8px;
+          position: relative;
+          &:hover {
+            background-color: rgba(255, 255, 255, .1);
+          }
+          .icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            pointer-events: none;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+          }
         }
-        .icon {
-          width: 50px;
-          height: 50px;
-          border-radius: 10px;
-          pointer-events: none;
-          position: absolute;
-          left: 50%;
-          top: 50%;
-          transform: translate(-50%, -50%);
+        .text {
+          max-width: 132px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;  
         }
-      }
-      .text {
-        max-width: 132px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;  
       }
     }
   }
