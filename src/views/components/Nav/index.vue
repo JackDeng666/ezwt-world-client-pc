@@ -29,6 +29,7 @@ const hide = () => {
   store.commit('hideCover')
 }
 const itemClick = (e) => {
+  console.log("dd")
   if(Date.now() - dragStartTime < 300) {
     console.log("跳转")
   }
@@ -200,7 +201,7 @@ function reset() { // 移动元素回到原来位置或者当前位置
         @mousedown.left="handleMousedown($event, item)">
         <img class="icon" :src="item.iconUrl"/>
       </div>
-      <div>{{item.text}}</div>
+      <span class="text">{{item.text}}</span>
     </div>
   </div>
   <!-- 当前拖动的虚拟滑块 -->
@@ -212,9 +213,18 @@ function reset() { // 移动元素回到原来位置或者当前位置
       @mouseup.left="handleMouseup">
       <img class="icon" :src="currentNavOb?.iconUrl"/>
     </div>
-    <div>{{currentNavOb?.text}}</div>
+    <span class="text">{{currentNavOb?.text}}</span>
   </div>
 </div>
+  <!-- <div class="container">
+    <Carousel
+      :initial="0"
+      :hasDot="true">
+      <CarouselItem v-for="(item, i) in 10" :key="i">
+        <div :class="['bg', `b${item}`]">{{item}}</div>
+      </CarouselItem>
+    </Carousel>
+  </div> -->
 </template>
 
 <style lang="scss" scoped>
@@ -223,11 +233,12 @@ function reset() { // 移动元素回到原来位置或者当前位置
   user-select: none;
   .nav-content {
     margin: 0 auto;
-    width: 650px;
+    width: 660px;
     display: flex;
     flex-wrap: wrap;
     .nav-item {
-      padding: 10px 25px;
+      width: 132px;
+      height: 122px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -238,15 +249,11 @@ function reset() { // 移动元素回到原来位置或者当前位置
       .wrap {
         width: 80px;
         height: 80px;
-        text-align: center;
         border-radius: 5px;
         background-color: rgba(255, 255, 255, .7);
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
         cursor: pointer;
         margin-bottom: 8px;
+        position: relative;
         &:hover {
           background-color: rgba(255, 255, 255, .1);
         }
@@ -255,32 +262,38 @@ function reset() { // 移动元素回到原来位置或者当前位置
           height: 50px;
           border-radius: 10px;
           pointer-events: none;
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
         }
+      }
+      .text {
+        max-width: 132px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;  
       }
     }
   }
   .virtual-nav-item {
-    padding: 10px 25px;
+    width: 132px;
+    height: 122px;
     position: fixed;
     display: none;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    user-select: none;
     color: #fff;
     font-size: 14px;
     .wrap {
       width: 80px;
       height: 80px;
-      text-align: center;
       border-radius: 5px;
       background-color: rgba(255, 255, 255, .1);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
       cursor: pointer;
       margin-bottom: 8px;
+      position: relative;
       &.show-bg {
         background-color: rgba(255, 255, 255, .7);
       }
@@ -289,7 +302,17 @@ function reset() { // 移动元素回到原来位置或者当前位置
         height: 50px;
         border-radius: 10px;
         pointer-events: none;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
       }
+    }
+    .text {
+      max-width: 132px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   }
 }
