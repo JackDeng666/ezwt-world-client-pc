@@ -16,11 +16,13 @@
 import UserInfo from '@/views/ToolView/UserInfo/index.vue'
 import ImageSettings from '@/views/ToolView/ImageSettings/index.vue'
 import FeedBack from '@/views/ToolView/FeedBack/index.vue'
+import AddNav from '@/views/ToolView/AddNav/index.vue'
 export default {
   components: {
     UserInfo,
     ImageSettings,
-    FeedBack
+    FeedBack,
+    AddNav
   },
   props: {
     title: {

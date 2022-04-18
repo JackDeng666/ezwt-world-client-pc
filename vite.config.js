@@ -22,8 +22,12 @@ export default defineConfig({
   },
   server: {
     open: true,
-    port: 3060,
+    port: 8080,
     proxy: {
+      '/api': {
+        target: 'http://localhost:3060',
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
     }
   }
 })

@@ -1,7 +1,7 @@
 <script setup>
 import { io } from "socket.io-client"
 import { ref, onMounted, getCurrentInstance } from 'vue'
-const socket = io('http://localhost:8080', {
+const socket = io('http://localhost:3060', {
   withCredentials: true,
   extraHeaders: {
     "token-header": "abcd"
