@@ -6,7 +6,7 @@ document.body.appendChild(mountNode)
 
 let PopWrap = null
 
-const show = (component, event) => {
+const show = (component, event, cOptions) => {
   return new Promise((resolve, reject) => {
     if(!PopWrap) {
       // 先挂外层样式
@@ -22,7 +22,7 @@ const show = (component, event) => {
       PopWrap.mount(mountNode)
       mountNode.removeAttribute('data-v-app') // 我就非要去了这东西
 
-      let content = createApp(component)
+      let content = createApp(component, cOptions)
       content.mixin({
         methods: {
           returnData(res) {

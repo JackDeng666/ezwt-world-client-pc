@@ -1,14 +1,24 @@
 <script setup>
 import antiShake from '@/umlib/antiShake'
 import { navApi } from '@/api'
-import { ref, getCurrentInstance, watch } from 'vue'
+import { reactive, getCurrentInstance, watch } from 'vue'
+import { guid } from '@/umlib'
 const { proxy } = getCurrentInstance()
-const iconSrc = ref('')
-const url = ref('')
-const title = ref('')
+const props = defineProps({
+  item: {
+    type: Object,
+    default: null
+  }
+})
+const navOb = reactive({
+  id: props.item?.id || guid(),
+  iconUrl: props.item?.iconUrl,
+  url: props.item?.url,
+  title: props.item?.title
+})
 
 watch(() => {
-  return url.value
+  return navOb.url
 }, (value) => {
   antiShake(() => {
     getData(value)
@@ -17,13 +27,13 @@ watch(() => {
 const getData = async url => {
   let res = await navApi.getNavInfoByUrl({ url })
   if(res.data) {
-    title.value = res.data.title
-    iconSrc.value = res.data.icon
+    navOb.title = res.data.title
+    navOb.iconUrl = res.data.iconUrl
   }
 }
-const add = async () => {
-  if(title.value) {
-    proxy.returnData({ status: 1, data: { title: title.value, url: url.value, iconSrc: iconSrc.value } })
+const submit = async () => {
+  if(navOb.title && navOb.url) {
+    proxy.returnData({ status: 1, data: navOb })
   } else {
     console.log("不行")
   }
@@ -36,15 +46,15 @@ const del = async () => {
 <template>
   <div class="add-nav-wrap" @click.stop="">
     <div class="title">
-      <div class="title-text">添加网站捷径</div>
+      <div class="title-text">{{ item ? '编辑' : '添加' }}网站捷径</div>
       <div class="del" @click="del">+</div>
     </div>
-    <input class="input" type="text" placeholder="网址" v-model="url">
-    <input class="input" type="text" placeholder="标题-留空自动获取" v-model="title">
+    <input class="input" type="text" placeholder="网址" v-model="navOb.url">
+    <input class="input" type="text" placeholder="标题-留空自动获取" v-model="navOb.title">
     <div class="bottom">
-      <img v-if="iconSrc" class="icon" :src="iconSrc">
-      <div class="tip" v-else>图标自动获取</div>
-      <div class="btn" @click="add">添加</div>
+      <img v-if="navOb.iconUrl" class="icon" :src="navOb.iconUrl">
+      <div class="tip" v-else>图标自动获取，或为默认图</div>
+      <div class="btn" @click="submit">{{ item ? '保存' : '添加' }}</div>
     </div>
   </div>
 </template>
@@ -97,10 +107,10 @@ const del = async () => {
       box-sizing: content-box;
       background: $basic-color;
       color: #fff;
-      border-radius: 10px;
+      border-radius: 6px;
       text-align: center;
-      padding: 4px 10px;
-      font-size: 14px;
+      padding: 3px 8px;
+      font-size: 13px;
       height: 20px;
       line-height: 20px;
       cursor: pointer;

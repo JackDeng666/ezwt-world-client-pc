@@ -1,21 +1,10 @@
 <script setup>
-import { getCurrentInstance } from 'vue'
 import navMove from './composition/navMove.js'
-import AddNav from './coms/AddNav'
 
-const { proxy } = getCurrentInstance()
-
-const add = (e) => {
-  proxy.$litlePop.show(AddNav, e).then(res => {
-    console.log(res, "666")
-    proxy.$litlePop.hide()
-  })
-}
-const itemRightClick = (e, item) => {
-  console.log(item)
-}
 // 移动布局相关
 const {
+  add,
+  itemRightClick,
   navList,
   navListIndex,
   currentNavOb,
@@ -52,7 +41,7 @@ const {
               @mousedown.left="handleMousedown($event, item)">
               <img class="icon" :src="item.iconUrl"/>
             </div>
-            <span class="text">{{item.text}}</span>
+            <span class="text">{{item.title}}</span>
           </div>
           <!-- 添加按钮 -->
           <div v-if="navList[i].length < 15" class="add-item">
@@ -61,6 +50,7 @@ const {
               @click.left="add">
               <div class="add">+</div>
             </div>
+            <span class="text">添加</span>
           </div>
         </div>
       </CarouselItem>
@@ -71,7 +61,7 @@ const {
     <div :class="['wrap', moveItemBgShow ? 'show-bg' : '']">
       <img class="icon" :src="currentNavOb?.iconUrl"/>
     </div>
-    <span class="text">{{currentNavOb?.text}}</span>
+    <span class="text">{{currentNavOb?.title}}</span>
   </div>
 </div>
 </template>
@@ -114,6 +104,8 @@ const {
             width: 50px;
             height: 50px;
             border-radius: 10px;
+            background-color: #fff;
+            padding: 8px;
             pointer-events: none;
             position: absolute;
             left: 50%;
@@ -184,6 +176,8 @@ const {
         width: 50px;
         height: 50px;
         border-radius: 10px;
+        background-color: #fff;
+        padding: 8px;
         pointer-events: none;
         position: absolute;
         left: 50%;

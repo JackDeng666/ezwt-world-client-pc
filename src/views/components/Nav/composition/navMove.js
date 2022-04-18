@@ -1,6 +1,7 @@
 import { ref, onMounted, getCurrentInstance } from 'vue'
 import { useStore } from 'vuex'
 import antiShake from '@/umlib/antiShake'
+import AddNav from '../coms/AddNav'
 
 export default function () {
   const { proxy } = getCurrentInstance()
@@ -11,7 +12,6 @@ export default function () {
   const currentNavOb = ref(null)
   const dragId = ref(-1)
   const moveItemBgShow = ref(false)
-  let isDrag = false
   let dragStartTime = 0
   let areaData = []
   areaData.length = navList.value.length
@@ -26,6 +26,36 @@ export default function () {
   })
 
   // 视图方法
+  const add = (e) => {
+    proxy.$litlePop.show(AddNav, e).then(res => {
+      if(res.status) {
+        proxy.navList[proxy.navListIndex].push(res.data) // 添加到当前视图
+        changeArr = JSON.parse(JSON.stringify(proxy.navList[proxy.navListIndex])) // changeArr更新
+        store.commit('setNavList', proxy.navList[proxy.navListIndex]) // 虚拟视图更新
+        // 更新到localStorage
+        localStorage.setItem('navList', JSON.stringify(proxy.navList.flat()))
+        proxy.$nextTick(() => {
+          navItems = document.querySelectorAll(`.nav-content.nc-${navListIndex.value}.real .nav-item`)
+          calcAreaData() // 计算新位置
+        })
+      }
+      proxy.$litlePop.hide()
+    })
+  }
+  const itemRightClick = (e, item) => {
+    proxy.$litlePop.show(AddNav, e, { item }).then(res => {
+      if(res.status) {
+        let item = proxy.navList[proxy.navListIndex].find(ef => ef.id == res.data.id) // 当前修改的item
+        item.url = res.data.url
+        item.title = res.data.title
+        item.iconUrl = res.data.iconUrl
+        changeArr = JSON.parse(JSON.stringify(proxy.navList[proxy.navListIndex])) // changeArr更新
+        // 更新到localStorage
+        localStorage.setItem('navList', JSON.stringify(proxy.navList.flat()))
+      }
+      proxy.$litlePop.hide()
+    })
+  }
   const hide = () => {
     store.commit('hideNavFolder')
     store.commit('hideCover')
@@ -36,7 +66,7 @@ export default function () {
     dragStartTime = Date.now()
     startX = e.x, startY = e.y
     // 隐藏原内容块
-    // Array.prototype.find.call(navItems, ef => ef.attributes['data-id'].value == item.id).style.opacity = '0'
+    // Array.prototype.find.call(navItems, ef => ef.attributes['data-id'].value == item.id)
     currentMoveItem = Array.from(navItems).find(ef => ef.attributes['data-id'].value == item.id)
     currentMoveItem.style.transition = 'none'
     currentMoveItem.style.opacity = '0'
@@ -44,7 +74,6 @@ export default function () {
     curentAreaData = findCurrent(item.id)
     firtDragArea = curentAreaData
     moveItemBgShow.value = false
-    isDrag = true
     moveObStyle = proxy.$refs['virtual-nav-item'].style
     moveObStyle.cssText = `
       display: flex;
@@ -65,10 +94,6 @@ export default function () {
       calcPosition(obx, oby)
     }, 300)
   }
-  // const handleMouseout = (e) => {
-  //   console.log('out')
-  //   dragId.value !== -1 && reset()
-  // }
   const handleMouseup = (e) => {
     if(Date.now() - dragStartTime < 100) {
       window.open(currentNavOb.value.url)
@@ -86,6 +111,8 @@ export default function () {
   }
 
   return {
+    add,
+    itemRightClick,
     navList,
     navListIndex,
     currentNavOb,
@@ -188,6 +215,8 @@ export default function () {
       el.style.position = 'static' 
       el.style.transition = 'none'
     })
+    // 保存最新数据到localStorage
+    localStorage.setItem('navList', JSON.stringify(navList.value.flat()))
   }
   function reset() { // 移动元素回到原来位置或者当前位置
     moveObStyle.transition = 'all .3s'
@@ -200,7 +229,6 @@ export default function () {
       currentMoveItem.style.transition = 'none'
       currentMoveItem.style.opacity = '1'
       moveObStyle.display = 'none'
-      isDrag = false
       cancelFixed()
     }, 300)
   }
