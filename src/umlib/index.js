@@ -16,3 +16,19 @@ export function spArr(arr, num) { //  arr是你要分割的数组，num是以几
 	}
 	return newArr
 }
+
+export function getElementPosition(element) {
+  let top = element.offsetTop //这是获取元素距父元素顶部的距离
+  let left = element.offsetLeft
+  let current = element.offsetParent //这是获取父元素
+  while (current !== null) {
+    //当它上面有元素时就继续执行
+    top += current.offsetTop //这是获取父元素距它的父元素顶部的距离累加起来
+    left += current.offsetLeft
+    current = current.offsetParent //继续找父元素
+  }
+  return {
+    top,
+    left
+  }
+}

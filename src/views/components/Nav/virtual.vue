@@ -5,7 +5,7 @@
     <div
       class="nav-item"
       v-for="(item, index) in $store.state.navList[$store.state.navListIndex]" 
-      :data-id="item.id">
+      :data-flip-key="item.id">
       <div class="wrap"></div>
       <span class="text">{{item.title}}</span>
     </div>

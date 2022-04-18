@@ -1,8 +1,8 @@
 <template>
   <Background/>
-  <div class="center" @click.right.prevent="">
+  <!-- <div class="center" @click.right.prevent="">
     <virtualNav class="virtual-nav" v-if="$store.state.isNavFolderShow"/>
-  </div>
+  </div> -->
   <div class="center" @click.right.prevent="">
     <Search class="search" :class="{active: !$store.state.isNavFolderShow}"/>
     <Nav class="nav" v-if="$store.state.isNavFolderShow"/>
@@ -14,7 +14,7 @@
 import Background from './components/Background/'
 import Search from './components/Search/'
 import Nav from './components/Nav/'
-import virtualNav from './components/Nav/virtual'
+// import virtualNav from './components/Nav/virtual'
 import FloatingTool from './components/FloatingTool/'
 </script>
 
@@ -38,10 +38,10 @@ import FloatingTool from './components/FloatingTool/'
   .nav {
     pointer-events: auto;
   }
-  .virtual-nav {
-    margin-top: 245px;
-    pointer-events: auto;
-    visibility: hidden;
-  }
+  // .virtual-nav {
+  //   margin-top: 245px;
+  //   pointer-events: auto;
+  //   visibility: hidden;
+  // }
 }
 </style>

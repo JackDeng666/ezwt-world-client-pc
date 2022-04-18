@@ -2,6 +2,11 @@ import { ref, onMounted, getCurrentInstance } from 'vue'
 import { useStore } from 'vuex'
 import antiShake from '@/umlib/antiShake'
 import AddNav from '../coms/AddNav'
+import { getElementPosition } from '@/umlib'
+import Flipping from 'flipping/dist/flipping.web'
+let flipping = new Flipping({
+  duration: 300
+})
 
 export default function () {
   const { proxy } = getCurrentInstance()
@@ -66,8 +71,8 @@ export default function () {
     dragStartTime = Date.now()
     startX = e.x, startY = e.y
     // 隐藏原内容块
-    // Array.prototype.find.call(navItems, ef => ef.attributes['data-id'].value == item.id)
-    currentMoveItem = Array.from(navItems).find(ef => ef.attributes['data-id'].value == item.id)
+    // Array.prototype.find.call(navItems, ef => ef.attributes['data-flip-key'].value == item.id)
+    currentMoveItem = Array.from(navItems).find(ef => ef.attributes['data-flip-key'].value == item.id)
     currentMoveItem.style.transition = 'none'
     currentMoveItem.style.opacity = '0'
     // 显示可拖动的虚拟dom
@@ -152,15 +157,20 @@ export default function () {
       let index = null
       changeArr.forEach((el, i) => el.id == dragId.value && (index = i))
       if(index !== changeObIndex) {
+        flipping.read()
+
         flag == 1 && swapArrItem(changeArr, index, changeObIndex) // 位于中心
         flag == 2 && moveArrItem(changeArr, index, changeObIndex) // 位于左侧
-        store.commit('setNavListIndex', navListIndex)
-        store.commit('setNavList', JSON.parse(JSON.stringify(changeArr)))
+        // store.commit('setNavListIndex', navListIndex)
+        // store.commit('setNavList', JSON.parse(JSON.stringify(changeArr)))
+        navList.value[navListIndex.value] = JSON.parse(JSON.stringify(changeArr))
+
         // 等待虚拟dom渲染后再计算
         proxy.$nextTick(() => {
-          changeToFixed() // 先改为fixed，否则第一次替换没有效果
+          flipping.flip()
+          // changeToFixed() // 先改为fixed，否则第一次替换没有效果
           calcAreaData() // 计算当前交换后的位置
-          changeToFixed() // 当前改为fixed，实现交替动画
+          // changeToFixed() // 当前改为fixed，实现交替动画
           curentAreaData = findCurrent(dragId.value) // 更新当前拖拽位置
         })
       }
@@ -184,39 +194,48 @@ export default function () {
   }
   function calcAreaData() { // 计算每块导航块所在位置
     areaData[navListIndex.value] = []
-    let virtualNavItems = document.querySelectorAll('.nav-content.virtual .nav-item')
-    virtualNavItems.forEach(el => {
+    // let virtualNavItems = document.querySelectorAll('.nav-content.virtual .nav-item')
+    // virtualNavItems.forEach(el => {
+    //   areaData[navListIndex.value].push({
+    //     id: el.attributes['data-flip-key'].value,
+    //     left: el.offsetLeft,
+    //     top: el.offsetTop,
+    //     width: el.offsetWidth,
+    //     height: el.offsetHeight
+    //   })
+    // })
+    navItems = document.querySelectorAll(`.nav-content.nc-${navListIndex.value}.real .nav-item`)
+    navItems.forEach(el => {
+      let { left, top } = getElementPosition(el)
       areaData[navListIndex.value].push({
-        id: el.attributes['data-id'].value,
-        left: el.offsetLeft,
-        top: el.offsetTop,
+        id: el.attributes['data-flip-key'].value,
+        left,
+        top,
         width: el.offsetWidth,
         height: el.offsetHeight
       })
     })
   }
-  function changeToFixed() { // 改为固定布局，展示动画
-    navItems.forEach(el => {
-      let a = findCurrent(el.attributes['data-id'].value)
-      el.style.cssText = el.style.cssText + `
-        transition: all .3s;
-        position: fixed;
-        left: ${a.left }px;
-        top: ${a.top }px;
-      `
-    })
-  }
+  // function changeToFixed() { // 改为固定布局，展示动画
+  //   navItems.forEach(el => {
+  //     let a = findCurrent(el.attributes['data-flip-key'].value)
+  //     el.style.cssText = el.style.cssText + `
+  //       transition: all .3s;
+  //       position: fixed;
+  //       left: ${a.left }px;
+  //       top: ${a.top }px;
+  //     `
+  //   })
+  // }
+  // function cancelFixed() { // 取消固定位置，可滑动
+  //   navList.value[navListIndex.value] = JSON.parse(JSON.stringify(changeArr))
+  //   navItems.forEach(el => {
+  //     el.style.position = 'static' 
+  //     el.style.transition = 'none'
+  //   })
+  // }
   function findCurrent(value) {
     return areaData[navListIndex.value].find(ef => ef.id == value)
-  }
-  function cancelFixed() { // 取消固定位置，可滑动
-    navList.value[navListIndex.value] = JSON.parse(JSON.stringify(changeArr))
-    navItems.forEach(el => {
-      el.style.position = 'static' 
-      el.style.transition = 'none'
-    })
-    // 保存最新数据到localStorage
-    localStorage.setItem('navList', JSON.stringify(navList.value.flat()))
   }
   function reset() { // 移动元素回到原来位置或者当前位置
     moveObStyle.transition = 'all .3s'
@@ -229,7 +248,9 @@ export default function () {
       currentMoveItem.style.transition = 'none'
       currentMoveItem.style.opacity = '1'
       moveObStyle.display = 'none'
-      cancelFixed()
+      // cancelFixed()
+      // 保存最新数据到localStorage
+      localStorage.setItem('navList', JSON.stringify(navList.value.flat()))
     }, 300)
   }
 }

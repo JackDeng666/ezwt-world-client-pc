@@ -34,12 +34,12 @@ const {
             class="nav-item"
             v-for="(item, index) in navList[i]"
             :key="item.id"
-            :data-id="item.id">
+            :data-flip-key="item.id">
             <div
               class="wrap"
               @click.right.stop.prevent="itemRightClick($event, item)"
               @mousedown.left="handleMousedown($event, item)">
-              <img class="icon" :src="item.iconUrl"/>
+              <img class="icon" :src="item.iconUrl || 'images/comical.png'"/>
             </div>
             <span class="text">{{item.title}}</span>
           </div>
@@ -59,7 +59,7 @@ const {
   <!-- 当前拖动的虚拟滑块 -->
   <div class="virtual-nav-item" ref="virtual-nav-item">
     <div :class="['wrap', moveItemBgShow ? 'show-bg' : '']">
-      <img class="icon" :src="currentNavOb?.iconUrl"/>
+      <img class="icon" :src="currentNavOb?.iconUrl || 'images/comical.png'"/>
     </div>
     <span class="text">{{currentNavOb?.title}}</span>
   </div>
