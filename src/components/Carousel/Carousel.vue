@@ -1,10 +1,10 @@
 <script setup>
 import CarouselDot from './CarouselDot'
 import { ref, getCurrentInstance } from 'vue'
-const emit = defineEmits(["dotClick"])
+const emit = defineEmits(["indexChange"])
 const { slots } = getCurrentInstance()
 const props = defineProps({
-  initial: {
+  cIndex: {
     type: Number,
     default: 0
   },
@@ -13,23 +13,32 @@ const props = defineProps({
     default: true
   }
 })
-const currentIndex = ref(props.initial)
+const currentIndex = ref(props.cIndex)
 const itemLen = ref(slots.default()[0].children.length)
 const direction = ref('next')
 const dotBgColor = getComputedStyle(document.documentElement).getPropertyValue('--basic-color')
 
 const setIndex = (index) => {
+  if(index < 0) index = itemLen.value - 1
+  if(index > itemLen.value - 1) index = 0
   if(currentIndex.value > index) {
     direction.value = 'prev'
   } else {
     direction.value = 'next'
   }
   currentIndex.value = index
+  emit("indexChange", index)
 }
-const dotClick = (index) => {
-  setIndex(index)
-  emit("dotClick", index)
+const leftClick = () => {
+  setIndex(currentIndex.value - 1)
 }
+const rightClick = () => {
+  setIndex(currentIndex.value + 1)
+}
+defineExpose({
+  leftClick,
+  rightClick
+})
 </script>
 
 <template>
@@ -41,7 +50,7 @@ const dotClick = (index) => {
       :currentIndex="currentIndex"
       :itemLen="itemLen"
       :dotBgColor="dotBgColor"
-      @dotClick="dotClick"/>
+      @dotClick="setIndex"/>
   </div>
 </template>
 

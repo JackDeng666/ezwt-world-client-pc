@@ -105,7 +105,7 @@ export default function () {
     }
     dragId.value !== -1 && reset()
   }
-  const dotClick = (index) => {
+  const carouselIndexChange = (index) => {
     navListIndex.value = index
     changeArr = JSON.parse(JSON.stringify(navList.value[index]))
     store.commit('setNavListIndex', index)
@@ -113,6 +113,12 @@ export default function () {
       navItems = document.querySelectorAll(`.nav-content.nc-${navListIndex.value}.real .nav-item`)
       calcAreaData()
     })
+  }
+  const leftClick = () => {
+    proxy.$refs['carouselRef'].leftClick()
+  }
+  const rightClick = () => {
+    proxy.$refs['carouselRef'].rightClick()
   }
 
   return {
@@ -126,7 +132,9 @@ export default function () {
     handleMousedown,
     handleMousemove,
     handleMouseup,
-    dotClick
+    carouselIndexChange,
+    leftClick,
+    rightClick
   }
   // 内部方法
   function calcPosition(obx, oby) { // 计算交换位置
@@ -176,8 +184,7 @@ export default function () {
       }
     }
   }
-  // arr目标数组  cKey移动元素下标，oKey目标元素下标
-  function moveArrItem (arr, cKey, oKey) {
+  function moveArrItem (arr, cKey, oKey) { // arr目标数组  cKey移动元素下标，oKey目标元素下标
     if(cKey > oKey) {
       arr.splice(oKey, 0, arr[cKey]); // 移动到指定元素之前
       arr.splice(cKey + 1, 1); // 移除原来位置上的该元素

@@ -13,7 +13,9 @@ const {
   handleMousedown,
   handleMousemove,
   handleMouseup,
-  dotClick
+  carouselIndexChange,
+  leftClick,
+  rightClick
 } = navMove()
 </script>
 
@@ -24,10 +26,12 @@ const {
   @mousemove.left="handleMousemove"
   @mouseup.left="handleMouseup">
   <div class="silde-container">
+    <div class="click-item" @click="leftClick"><span>《</span></div>
     <Carousel
-      :initial="0"
+      ref="carouselRef"
+      :cIndex="navListIndex"
       :hasDot="true"
-      @dotClick="dotClick">
+      @indexChange="carouselIndexChange">
       <CarouselItem v-for="(citem, i) in navList" :key="i">
         <div :class="`nav-content nc-${i} real`">
           <div
@@ -55,6 +59,7 @@ const {
         </div>
       </CarouselItem>
     </Carousel>
+    <div class="click-item" @click="rightClick"><span>》</span></div>
   </div>
   <!-- 当前拖动的虚拟滑块 -->
   <div class="virtual-nav-item" ref="virtual-nav-item">
@@ -71,12 +76,14 @@ const {
   width: 100%;
   user-select: none;
   .silde-container {
-    width: 660px;
+    width: 860px;
     height: 366px;
     margin: 0 auto;
+    display: flex;
+    align-items: center;
     .nav-content {
-      // margin: 0 auto;
-      // width: 660px;
+      margin: 0 auto;
+      width: 660px;
       display: flex;
       flex-wrap: wrap;
       .nav-item {
@@ -147,6 +154,25 @@ const {
             line-height: 80px;
             font-size: 50px;
           }
+        }
+      }
+    }
+    .click-item {
+      width: 100px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0);
+      span {
+        color: rgba(255, 255, 255, 0);
+      }
+      &:hover {
+        background: rgba(255, 255, 255, .1);
+        span {
+          color: rgba(255, 255, 255, 1);
         }
       }
     }
