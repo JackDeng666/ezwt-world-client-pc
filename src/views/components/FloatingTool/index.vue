@@ -1,3 +1,8 @@
+<script setup>
+import init from './composition/index'
+const { menus, menuOff, menuClick, itemClick } = init()
+</script>
+
 <template>
   <div id="menu">
     <div id="menu_list">
@@ -10,21 +15,6 @@
     </div>
   </div>
 </template>
-
-<script>
-import { toRefs } from 'vue'
-import init from './composition/index'
-export default {
-  setup () {
-    const { state, menuClick, itemClick } = init()
-    return {
-      ...toRefs(state),
-      menuClick,
-      itemClick
-    }
-  }
-}
-</script>
 
 <style lang="scss" scoped>
 #menu {

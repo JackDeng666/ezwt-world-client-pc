@@ -4,8 +4,8 @@ let oBtn = null
 let aMenus = null
 let menus = [
   { name: '用户', class: 'iconfont icon-user', component: 'UserInfo' },
-  { name: '设置', class: 'iconfont icon-shezhi', component: 'UserInfo' },
-  { name: '壁纸设置', class: 'iconfont icon-bizhiputie', component: 'ImageSettings' },
+  { name: '设置', class: 'iconfont icon-shezhi', component: 'Setting' },
+  { name: '主题', class: 'iconfont icon-bizhiputie', component: 'ImageSettings' },
   { name: '帮助', class: 'iconfont icon-bangzhu', component: 'UserInfo' },
   { name: '反馈', class: 'iconfont icon-fankui', component: 'FeedBack' }
 ]
@@ -55,7 +55,7 @@ export default function () {
   }
 
   return {
-    state,
+    ...state,
     menuClick,
     itemClick
   }
