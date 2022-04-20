@@ -17,6 +17,7 @@ const currentIndex = ref(props.cIndex)
 const itemLen = ref(slots.default()[0].children.length)
 const direction = ref('next')
 const dotBgColor = getComputedStyle(document.documentElement).getPropertyValue('--basic-color')
+const transformStyle = ref('')
 
 const setIndex = (index) => {
   if(index < 0) index = itemLen.value - 1
@@ -27,6 +28,7 @@ const setIndex = (index) => {
     direction.value = 'next'
   }
   currentIndex.value = index
+  transformStyle.value = `transform: translateX(-${index * 100}%);`
   emit("indexChange", index)
 }
 const leftClick = () => {
@@ -43,7 +45,7 @@ defineExpose({
 
 <template>
   <div class="carousel">
-    <div class="inner">
+    <div class="inner" :style="transformStyle">
       <slot/>
     </div>
     <CarouselDot
@@ -56,13 +58,13 @@ defineExpose({
 
 <style lang="scss" scoped>
 .carousel {
-  width: 100%;
-  height: 100%;
+  width: 660px;
+  overflow: hidden;
   .inner {
     width: 100%;
     height: 100%;
-    position: relative;
-    overflow: hidden;
+    display: flex;
+    // transform: translateX(-100%);
   }
 }
 </style>

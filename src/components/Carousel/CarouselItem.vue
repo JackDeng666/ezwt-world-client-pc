@@ -18,20 +18,17 @@ watch(() => {
 </script>
 
 <template>
-  <transition :name="direction">
-    <div class="carousel-item" v-if="selfIndex === currentIndex">
+  <!-- <transition :name="direction"> -->
+    <div class="carousel-item">
       <slot/>
     </div>
-  </transition>
+  <!-- </transition> -->
 </template>
 
 <style lang="scss" scoped>
 .carousel-item {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  width: inherit;
+  height: inherit;
 }
 .next-enter-active,
 .next-leave-active,

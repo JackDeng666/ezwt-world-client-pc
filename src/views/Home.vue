@@ -27,7 +27,8 @@ import FloatingTool from './components/FloatingTool/'
   height: 100%;
   pointer-events: none;
   .search {
-    margin-top: 200px;
+    position: fixed;
+    top: 200px;
     opacity: 0;
     pointer-events: none;
     &.active {

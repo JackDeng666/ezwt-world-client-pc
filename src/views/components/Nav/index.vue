@@ -15,7 +15,8 @@ const {
   handleMouseup,
   carouselIndexChange,
   leftClick,
-  rightClick
+  rightClick,
+  directMouseenter
 } = navMove()
 </script>
 
@@ -26,7 +27,7 @@ const {
   @mousemove.left="handleMousemove"
   @mouseup.left="handleMouseup">
   <div class="silde-container">
-    <div class="click-item" @click="leftClick"><span>《</span></div>
+    <div class="click-item" @click="leftClick" @mouseenter="directMouseenter(0)"><span>《</span></div>
     <Carousel
       ref="carouselRef"
       :cIndex="navListIndex"
@@ -59,7 +60,7 @@ const {
         </div>
       </CarouselItem>
     </Carousel>
-    <div class="click-item" @click="rightClick"><span>》</span></div>
+    <div class="click-item" @click="rightClick" @mouseenter="directMouseenter(1)"><span>》</span></div>
   </div>
   <!-- 当前拖动的虚拟滑块 -->
   <div class="virtual-nav-item" ref="virtual-nav-item">
@@ -74,6 +75,8 @@ const {
 <style lang="scss" scoped>
 #nav-box {
   width: 100%;
+  height: 100%;
+  padding-top: 200px;
   user-select: none;
   .silde-container {
     width: 860px;
@@ -158,6 +161,7 @@ const {
       }
     }
     .click-item {
+      flex-shrink: 0;
       width: 100px;
       height: 100%;
       display: flex;
@@ -187,6 +191,7 @@ const {
     align-items: center;
     color: #fff;
     font-size: 14px;
+    pointer-events: none;
     .wrap {
       width: 80px;
       height: 80px;
