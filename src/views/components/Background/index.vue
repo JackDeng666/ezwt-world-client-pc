@@ -8,8 +8,10 @@ import { useStore } from "vuex"
 const store = useStore()
 // 鼠标右击事件
 const bgRightClick = () => {
-  store.commit('toggleNavFolder')
-  store.commit('toggleCoverShow')
+  if(!store.state.isCoverShow) {
+    store.commit('showCover')
+    store.commit('showNavFolder')
+  }
 }
 const bgLeftClick = () => {
   if(!store.state.isNavFolderShow) {
